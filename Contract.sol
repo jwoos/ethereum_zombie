@@ -23,10 +23,18 @@ contract ZombieFactory {
 	 */
 	Zombie[] public zombies;
 
+	// mappings are key-value structures
+	mapping (uint => address) public zombieToOwner;
+    mapping (address => uint) ownerZombieCount;
+
 	// private entities should be prefixed with _
 	// private functions are not accessible outside
 	function _createZombie(string _name, uint _dna) private {
 		uint id = zombies.push(Zombie(_name, _dna)) - 1;
+
+		// msg.sender will always be defined since someone has to call it
+		zombieToOwner[id] = msg.sender;
+		ownerZombieCount[msg.sender]++;
 		NewZombie(id, _name, _dna);
 	}
 
@@ -39,8 +47,9 @@ contract ZombieFactory {
 	}
 
 	function createRandomZombie(string _name) public {
+		// require throw an error if the condition is not met
+		require(ownerZombieCount[msg.sender] == 0);
 		uint randDna = _generateRandomDna(_name);
 		_createZombie(_name, randDna);
 	}
-
 }
