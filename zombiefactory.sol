@@ -27,9 +27,9 @@ contract ZombieFactory {
 	mapping (uint => address) public zombieToOwner;
     mapping (address => uint) ownerZombieCount;
 
-	// private entities should be prefixed with _
-	// private functions are not accessible outside
-	function _createZombie(string _name, uint _dna) private {
+	// internal is private but also accessible from inside the contract
+	// external is public but the functions are not callable from inside the contract
+	function _createZombie(string _name, uint _dna) internal {
 		uint id = zombies.push(Zombie(_name, _dna)) - 1;
 
 		// msg.sender will always be defined since someone has to call it
@@ -38,6 +38,7 @@ contract ZombieFactory {
 		NewZombie(id, _name, _dna);
 	}
 
+	// private entities should be prefixed with _
 	// view denotes the function only accesses data
 	// pure denotes that no access is done
 	function _generateRandomDna(string _str) private view returns (uint) {
