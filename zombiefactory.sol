@@ -12,11 +12,16 @@ contract ZombieFactory is Ownable {
 	 */
 	uint dnaDigits = 16;
 	uint dnaModulus = 10 ** dnaDigits;
+	
+	uint cooldownTime = 1 days;
 
 	// like a C struct, just PoD
+	// pack the struct with smaller types to save space
 	struct Zombie {
 		string name;
 		uint dna;
+		uint32 level;
+		uint32 readyTime;
 	}
 
 	/* Arrays
@@ -27,12 +32,12 @@ contract ZombieFactory is Ownable {
 
 	// mappings are key-value structures
 	mapping (uint => address) public zombieToOwner;
-    mapping (address => uint) ownerZombieCount;
+	mapping (address => uint) ownerZombieCount;
 
 	// internal is private but also accessible from inside the contract
 	// external is public but the functions are not callable from inside the contract
-	function _createZombie(string _name, uint _dna) internal {
-		uint id = zombies.push(Zombie(_name, _dna)) - 1;
+	function _createZombie(string _name, uint _dna, uint32 _level, uint32 _readyTime) internal {
+		uint id = zombies.push(Zombie(_name, _dna, 1, uint32(now + cooldownTime))) - 1;
 
 		// msg.sender will always be defined since someone has to call it
 		zombieToOwner[id] = msg.sender;
